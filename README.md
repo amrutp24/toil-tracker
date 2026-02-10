@@ -13,20 +13,20 @@ pip install git+https://github.com/amrutp24/toil-tracker
 ### Scan a repository for toil:
 ```bash
 toil-tracker scan /path/to/your/repo
-toil-tracker scan . --days 60
+toil-tracker scan /path/to/repo --days 60
 ```
-
+ 
 ### View toil summary:
 ```bash
 toil-tracker summary
 toil-tracker summary --days 30
 ```
-
+ 
 ### Launch web dashboard:
 ```bash
 toil-tracker dashboard
 ```
-
+ 
 ## 🎯 What it Detects
 
 Automatically scans Git commit messages for toil patterns:
