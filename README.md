@@ -65,10 +65,21 @@ manual_fix: 4 total
 
 **30% of engineering time is spent on toil** - manual, repetitive work that provides no lasting value. This tool helps you:
 
-1. **Identify** what repetitive work your team is doing
-2. **Prioritize** automation opportunities  
-3. **Track** reduction in operational overhead
-4. **Make data-driven** DevOps decisions
+1. **Identify** where your engineering time is going
+2. **Discover** automation opportunities  
+3. **Quantify** operational overhead
+4. **Make informed** DevOps decisions
+
+## 🎯 What It Actually Does
+
+**Detects & Visualizes:**
+- Manual deployment patterns
+- Repetitive fixes and hotfixes
+- Environment setup work
+- Service restarts/reboots
+- Rollbacks and reverts
+
+**Then you decide where to automate based on the insights.**
 
 ## 🛠️ Development Install
 
@@ -99,4 +110,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 ---
 
-**⚡ Stop wasting time on toil. Start automating what matters.**
+**⚡ Stop wondering where your engineering time goes. Start making data-driven DevOps decisions.**
