@@ -3,6 +3,7 @@ Basic unit tests for toil tracker
 """
 
 import unittest
+import sys
 import tempfile
 import subprocess
 import sqlite3
