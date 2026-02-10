@@ -1,0 +1,3 @@
+[console_scripts]
+toil-dashboard = toil_tracker.dashboard:main
+toil-tracker = toil_tracker.cli:main
