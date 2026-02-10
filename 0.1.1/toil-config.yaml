@@ -1,0 +1,311 @@
+# Toil Tracker Configuration
+# Customize patterns, severity levels, and integration settings
+
+# Pattern detection rules
+patterns:
+  manual_deploy:
+    keywords:
+      - "deploy"
+      - "deployment"
+      - "production deploy"
+      - "prod deploy"
+      - "release"
+    regex:
+      - "deploy.*production"
+      - "prod.*deploy"
+      - "release.*v\\d+\\.\\d+"
+      - "pipeline.*run"
+    file_patterns:
+      - "deploy*.sh"
+      - "docker-compose.*.yml"
+      - "k8s/*.yaml"
+      - "helm/*.yaml"
+    exclude:
+      - "test"
+      - "staging"
+      - "dev"
+    severity_multiplier: 1.2  # Higher multiplier = higher default severity
+
+  manual_fix:
+    keywords:
+      - "fix"
+      - "hotfix"
+      - "emergency"
+      - "manual"
+      - "patch"
+      - "critical"
+    regex:
+      - "emergency.*fix"
+      - "critical.*bug"
+      - "manual.*intervention"
+      - "hotfix.*\\d+"
+    file_patterns:
+      - "*.patch"
+      - "hotfix*"
+      - "emergency*"
+    exclude:
+      - "test"
+      - "unit test"
+    severity_multiplier: 1.5
+
+  revert:
+    keywords:
+      - "revert"
+      - "rollback"
+      - "backed out"
+      - "undo"
+    regex:
+      - "revert.*[a-f0-9]{7,}"
+      - "rollback.*version"
+      - "backed out.*changes"
+      - "undo.*commit"
+    file_patterns: []
+    exclude: []
+    severity_multiplier: 1.3
+
+  env_setup:
+    keywords:
+      - "env"
+      - "environment"
+      - "setup"
+      - "config"
+      - "configuration"
+      - "infrastructure"
+    regex:
+      - "environment.*setup"
+      - "config.*change"
+      - "infrastructure.*update"
+      - "terraform.*apply"
+      - "ansible.*run"
+    file_patterns:
+      - "*.tf"
+      - "ansible/*"
+      - "puppet/*"
+      - "chef/*"
+      - "Dockerfile"
+      - "*.env"
+    exclude: []
+    severity_multiplier: 1.0
+
+  restart:
+    keywords:
+      - "restart"
+      - "reboot"
+      - "restart service"
+      - "service restart"
+    regex:
+      - "service.*restart"
+      - "server.*reboot"
+      - "container.*restart"
+      - "pod.*restart"
+    file_patterns: []
+    exclude:
+      - "scheduled"
+      - "planned"
+    severity_multiplier: 0.8
+
+  pipeline_issue:
+    keywords:
+      - "pipeline"
+      - "ci"
+      - "cd"
+      - "build"
+      - "jenkins"
+      - "github actions"
+    regex:
+      - "pipeline.*failed"
+      - "ci.*fix"
+      - "build.*broken"
+      - "jenkins.*issue"
+      - "github.*actions.*fail"
+    file_patterns:
+      - "*.yml"
+      - "Jenkinsfile"
+      - ".github/workflows/*"
+    exclude:
+      - "test"
+      - "experimental"
+    severity_multiplier: 1.1
+
+  kubernetes:
+    keywords:
+      - "k8s"
+      - "kubernetes"
+      - "kubectl"
+      - "pod"
+      - "deployment"
+      - "service"
+    regex:
+      - "kubectl.*apply"
+      - "k8s.*restart"
+      - "pod.*crash"
+      - "deployment.*rollback"
+      - "namespace.*issue"
+    file_patterns:
+      - "k8s/*.yaml"
+      - "kubernetes/*.yaml"
+      - "*.k8s.yml"
+    exclude:
+      - "test"
+      - "dev"
+    severity_multiplier: 1.2
+
+  security:
+    keywords:
+      - "security"
+      - "vulnerability"
+      - "cve"
+      - "patch security"
+      - "security fix"
+    regex:
+      - "security.*patch"
+      - "cve.*\\d{4}-\\d+"
+      - "vulnerability.*fix"
+      - "security.*update"
+    file_patterns:
+      - "security*"
+      - "cve*"
+    exclude: []
+    severity_multiplier: 2.0  # Highest priority
+
+# Severity classification rules
+severity:
+  high:
+    keywords:
+      - "emergency"
+      - "critical"
+      - "urgent"
+      - "outage"
+      - "downtime"
+      - "security"
+      - "production"
+      - "prod"
+    score_range: [7, 10]
+    
+  medium:
+    keywords:
+      - "hotfix"
+      - "manual"
+      - "ci"
+      - "pipeline"
+      - "staging"
+      - "deployment"
+    score_range: [4, 6]
+    
+  low:
+    keywords:
+      - "update"
+      - "config"
+      - "restart"
+      - "env"
+      - "test"
+      - "dev"
+    score_range: [1, 3]
+
+# Analytics settings
+analytics:
+  cost_estimation:
+    # Time estimates in hours per event (based on severity)
+    time_per_event:
+      HIGH: 4.0
+      MEDIUM: 2.0
+      LOW: 1.0
+    
+    # Default hourly rate for cost calculation
+    default_hourly_rate: 100.0
+    
+    # Automation efficiency assumptions (0-1)
+    automation_efficiency:
+      high: 0.9    # 90% of high-value toil can be automated
+      medium: 0.7  # 70% of medium-value toil can be automated
+      low: 0.5     # 50% of low-value toil can be automated
+  
+  # Thresholds for recommendations
+  thresholds:
+    high_toil_hours_per_month: 40
+    high_toil_cost_per_month: 4000
+    team_workload_imbalance_threshold: 2.0  # ratio difference
+    velocity_acceleration_warning: 0.5  # events per day²
+
+# Integration settings
+integrations:
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#devops-alerts"
+    username: "ToilTracker"
+    icon_emoji: ":warning:"
+    mention_users: []
+    trigger_conditions:
+      high_severity_count: 3
+      daily_toil_threshold: 10
+      cost_threshold: 1000
+
+  jira:
+    enabled: false
+    server_url: ""
+    username: ""
+    api_token: ""
+    project_key: "DEV"
+    default_issue_type: "Task"
+    priority_mapping:
+      HIGH: "Highest"
+      MEDIUM: "High"
+      LOW: "Medium"
+
+  github:
+    enabled: false
+    token: ""
+    create_issues: true
+    assign_to: []
+    labels: ["toil", "automation-opportunity"]
+    
+  email:
+    enabled: false
+    smtp_server: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    from_address: ""
+    to_addresses: []
+
+# Performance settings
+performance:
+  # Parallel processing
+  max_workers: 4
+  batch_size: 50  # commits per batch
+  
+  # Caching
+  cache_enabled: true
+  cache_ttl: 3600  # seconds
+  
+  # Repository scanning limits
+  max_commits_per_scan: 1000
+  max_file_changes_per_commit: 100
+
+# Reporting settings
+reporting:
+  default_days_back: 30
+  export_formats: ["json", "csv", "html"]
+  include_recommendations: true
+  include_cost_analysis: true
+  include_team_insights: true
+
+# Custom patterns for specific organizations
+custom_patterns:
+  # Add organization-specific patterns here
+  # Example:
+  # company_specific:
+  #   keywords: ["legacy-system", "mainframe", "cobol"]
+  #   regex: ["legacy.*fix", "mainframe.*restart"]
+  #   file_patterns: ["*.cobol", "*.jcl"]
+  #   exclude: []
+  #   severity_multiplier: 1.8
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "toil-tracker.log"
+  max_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
